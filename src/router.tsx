@@ -36,6 +36,7 @@ export function getRouter() {
         const pathname = opts.location.pathname;
 
         // Disable scroll restoration for commit viewer pages
+        // biome-ignore lint/performance/useTopLevelRegex: ok
         if (/^\/[^/]+\/[^/]+\/commits\/[0-9a-f]{7,40}$/i.test(pathname)) {
           return false;
         }
@@ -57,7 +58,6 @@ export function getRouter() {
 }
 
 declare module "@tanstack/react-router" {
-  // biome-ignore lint/style/useConsistentTypeDefinitions: it is what it is
   interface Register {
     router: ReturnType<typeof getRouter>;
   }
