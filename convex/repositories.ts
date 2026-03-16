@@ -2,7 +2,7 @@ import type { DataModelFromSchemaDefinition } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { components } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
-import { authComponent, createAuth } from "./auth";
+import { authComponent } from "./auth";
 import type authSchema from "./betterAuth/schema";
 
 /**
@@ -98,7 +98,7 @@ export const checkPermissionByPAT = mutation({
   handler: async (ctx, arg) => {
     // Step 1: Check if repository exists
     const repo = await ctx.db
-      .query("repositories")
+      .query("")
       .withIndex("by_owner_name", (q) =>
         q.eq("owner", arg.owner).eq("name", arg.repo)
       )

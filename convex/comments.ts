@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { authComponent } from "./auth";
+import { auth } from "./auth";
 
 /**
  * Add a comment to an issue
@@ -11,8 +11,9 @@ export const addComment = mutation({
     body: v.string(),
   },
   returns: v.id("comments"),
+
   handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx).catch(() => null);
+    const user = await auth.getAuthUser(ctx).catch(() => null);
 
     if (!user) {
       throw new ConvexError("Not authenticated");

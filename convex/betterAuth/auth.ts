@@ -1,5 +1,5 @@
-import { getStaticAuth } from "@convex-dev/better-auth";
-import { createAuth } from "../auth";
+import { createAuthOptions } from "../auth";
 
 // Export a static instance for Better Auth schema generation
-export const auth = getStaticAuth(createAuth);
+// biome-ignore lint/suspicious/noExplicitAny: ok
+export const auth = createAuthOptions({} as any);

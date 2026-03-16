@@ -1,10 +1,14 @@
 import { query } from "./_generated/server";
-import { authComponent, createAuth } from "./auth";
+import { createAuthOptions } from "./auth";
 
-export const get = query({
+export const getSessionHealth = query({
   handler: async (ctx) => {
-    const { auth, headers } = await authComponent.getAuth(createAuth, ctx);
-    const data = await auth.api.getSession({
+    const { authComponent, headers } = await authComponent.getAuth(
+      ctx,
+      createAuthOptions
+    );
+    const data = await authComponent.clientApi().getSession;
+    ({
       headers,
     });
     return data;

@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { authComponent, createAuth } from "./auth";
+import { authComponent } from "./auth";
 
 export const get = query({
   args: {},
@@ -24,8 +24,8 @@ export const verifyApiKey = mutation({
     apiKey: v.string(),
   },
   handler: async (ctx, args) => {
-    const { auth } = await authComponent.getAuth(createAuth, ctx);
-    const data = await auth.api.verifyApiKey({
+    const { auth } = await authComponent.getAuth(ctx);
+    const data = await auth.verifyApiKey({
       body: {
         key: args.apiKey,
       },
