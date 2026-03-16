@@ -16,11 +16,14 @@ import type { DataModel } from "./_generated/dataModel";
 import { internalAction, query } from "./_generated/server";
 import authConfig from "./auth.config";
 import authSchema from "./betterAuth/schema";
+import SendMagicLinkEmail from "./emails/send-magicLink-email";
+import SendResetPasswordEmail from "./emails/send-reset-password-email";
+import SendVerificationEmail from "./emails/send-verification-email";
 
 const siteUrl = process.env.SITE_URL ?? "";
 
 export const authComponent = createClient<DataModel, typeof authSchema>(
-  components.
+  components.betterAuth,
   {
     local: {
       schema: authSchema,
@@ -41,7 +44,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
     },
     emailVerification: {
       sendVerificationEmail: async ({ user, url }) => {
-        await sendEmailVerification(requireActionCtx(ctx), {
+        await SendVerificationEmail(requireActionCtx(ctx), {
           to: user.email,
           url,
         });
@@ -50,8 +53,8 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
-      sendResetPassword: async ({ user, url }) => {
-        await sendResetPassword(requireActionCtx(ctx), {
+      SendResetPasswordEmail: async ({ user, url }) => {
+        await SendResetPasswordEmail(requireActionCtx(ctx), {
           to: user.email,
           url,
         });
@@ -84,16 +87,16 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
       anonymous(),
       username(),
       magicLink({
-        sendMagicLink: async ({ email, url }) => {
-          await sendMagicLink(requireActionCtx(ctx), {
+        SendMagicLinkEmail: async ({ email, url }) => {
+          await SendMagicLinkEmail(requireActionCtx(ctx), {
             to: email,
             url,
           });
         },
       }),
       emailOTP({
-        async sendVerificationOTP({ email, otp }) {
-          await sendOTPVerification(requireActionCtx(ctx), {
+        async SendOTPVerificationEmail({ email, otp }) {
+          await SendOTPVerificationEmail(requireActionCtx(ctx), {
             to: email,
             code: otp,
           });
@@ -103,16 +106,16 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
       genericOAuth({
         config: [
           {
-            providerId: "slack",
-            clientId: process.env.SLACK_CLIENT_ID as string,
-            clientSecret: process.env.SLACK_CLIENT_SECRET as string,
-            discoveryUrl: "https://slack.com/.well-known/openid-configuration",
+            providerId: "github",
+            clientId: process.env.GITHUB_CLIENT_ID as string,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+            discoveryUrl: "https://github.com/.well-known/openid-configuration",
             scopes: ["openid", "email", "profile"],
           },
         ],
       }),
       convex({
-        authConfig,
+        authConfig.convex,
       }),
     ],
   } satisfies BetterAuthOptions;
@@ -140,8 +143,8 @@ export const getCurrentUser = query({
 export const getUserById = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.runQuery(authComponent.getUserById, {
-      userId: args.userId,
-    });
+    return await authComponent.getAnyUserById(ctx, args.userId);
   },
 });
+// Backward-compatible alias for callers using `getUserByID`
+export const getUserByID = getUserById;

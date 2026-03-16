@@ -27,6 +27,7 @@
 		"@convex-dev/better-auth": "^0.11.2",
 		"@convex-dev/react-query": "^0.1.0",
 		"@fontsource-variable/jetbrains-mono": "^5.2.8",
+		"@react-email/components": "^1.0.9",
 		"@tanstack/react-query": "^5.90.21",
 		"@tanstack/react-router": "^1.166.7",
 		"@tanstack/react-router-ssr-query": "^1.166.7",
